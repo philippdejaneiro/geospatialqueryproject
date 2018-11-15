@@ -1,0 +1,110 @@
+<head>
+  <title>geospatial-query-project</title>
+</head>
+
+<body>
+  <h1>Latest NDBC Observations.</h1>
+  {{> info}}
+  {{> queryLocation}}
+  {{> observationList}}
+</body>
+
+<template name="info">
+  <p>{{obsImportMessage}}</p>
+</template>
+
+<template name="queryLocation">
+  <form>
+    <input type="number" name="lon" placeholder="Longitude" min="-180" max="180" step="0.1">
+    <input type="number" name="lat" placeholder="Latitude" min="-90" max="90" step="0.1">
+    <input type="number" name="rad" placeholder="Radius" min="0"> miles
+    <input type="submit" value="Query Observations in Radius">
+  </form>
+  <button class="geolocate">Set to my Geolocation</button>
+  <button class="dummylocate">Set to my dummy location</button>
+</template>
+
+<template name="observationList">
+  <div class="panel-heading hbuilt">
+    <span class="panel-title">{{nearObservationsQueryStatus}}</span>
+  </div>
+  <div class="panel-body">
+      <div class="table-collapse">
+        <table class="table table-condensed table-bordered">
+          <thead>
+          <tr>
+            {{#each observationTitles}}
+              {{> observationTitle}}
+            {{/each}}
+          </tr>
+          </thead>
+          <tbody>
+            {{#each nearObservations}}
+              {{> observationLine}}
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+  </div>
+</template>
+
+<template name="observationTitle">
+    <td>
+      {{this}}
+    </td>
+</template>
+
+<template name="observationLine">
+  <tr>
+    <td>
+      {{this.stationId}}
+    </td>
+    <td>
+      {{this.coordinates.[0]}}
+    </td>
+    <td>
+      {{this.coordinates.[1]}}
+    </td>
+    <td>
+      {{this.date}}
+    </td><td>
+    	{{this.WSPD}}
+    </td>
+    <td>
+    	{{this.GST }}
+    </td>
+    <td>
+    	{{this.WVHT}}
+    </td>
+    <td>
+    	{{this.DPD }}
+    </td>
+    <td>
+    	{{this.APD }}
+    </td>
+    <td>
+    	{{this.MWD }}
+    </td>
+    <td>
+    	{{this.PRES}}
+    </td>
+    <td>
+    	{{this.PTDY}}
+    </td>
+    <td>
+    	{{this.ATMP}}
+    </td>
+    <td>
+    	{{this.WTMP}}
+    </td>
+    <td>
+    	{{this.DEWP}}
+    </td>
+    <td>
+    	{{this.VIS }}
+    </td>
+    <td>
+    	{{this.TIDE}}
+    </td>
+  </tr>
+</template>
