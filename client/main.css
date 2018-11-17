@@ -2,3 +2,10 @@ body {
   padding: 10px;
   font-family: sans-serif;
 }
+
+th.table {
+    background-color: #4CAF50;
+    color: white;
+}
+
+tr:nth-child(even) {background-color: #f2f2f2;}
