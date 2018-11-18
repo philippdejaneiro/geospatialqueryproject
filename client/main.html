@@ -1,42 +1,41 @@
 <head>
   <title>geospatial-query-project</title>
-  
 </head>
 
 <body>
-  <div class="container">
-    <h1>Latest NDBC Observations.</h1>
-    {{> info}}
-    {{> queryLocation}}
-    {{> observationList}}
+  <div class="container-fluid">
+    <h1>Latest NDBC Observations</h1>
+    {{> info}} {{> queryLocation}} {{> observationList}}
   </div>
 </body>
 
 <template name="info">
-  <p>{{obsImportMessage}}</p>
+  <div class="alert alert-light" role="alert">
+    {{obsImportMessage}}
+  </div>
 </template>
 
 <template name="queryLocation">
-  <form class="form-inline">
-    <label for="ex1">Longitude</label>
-    <input class="form-control"  type="number" name="lon" placeholder="Longitude" min="-180" max="180" step="0.1">
-    <label for="ex2">Latitude</label>
-    <input class="form-control" type="number" name="lat" placeholder="Latitude" min="-90" max="90" step="0.1">
-    <label for="ex3">Radius/miles</label>
-    <input class="form-control" type="number" name="rad" placeholder="Radius" min="0">
-    <input type="submit" value="Query Observations in Radius">
-  </form>
-    <div class="col-xs-6">
-      <div>
-        <button class="dummylocate">Set to dummy location</button>
-        <button class="geolocate">Set to my Geolocation</button>
-      </div>
+  <div class="container-fluid">
+    <form class="form-inline">
+      <label class="my-1 mr-2" for="ex1">Longitude:</label>
+      <input class="form-control mb-2 mr-sm-2"  type="number" name="lon" placeholder="Longitude" min="-180" max="180" step="0.1">
+      <label class="my-1 mr-2" for="ex2">Latitude:</label>
+      <input class="form-control mb-2 mr-sm-2" type="number" name="lat" placeholder="Latitude" min="-90" max="90" step="0.1">
+      <label class="my-1 mr-2" for="ex3">Radius/miles:</label>
+      <input class="form-control mb-2 mr-sm-2" type="number" name="rad" placeholder="Radius" min="0">
+      <button type="submit" class="btn btn-primary mb-2">Query Observations in Radius</button>
+    </form>
+    <div>
+      <button type="button" class="btn btn-secondary dummylocate">Set to dummy location</button>
+      <button type="button" class="btn btn-secondary geolocate">Set to my Geolocation</button>
     </div>
+  </div>
 </template>
 
 <template name="observationList">
-  <div class="panel-heading hbuilt">
-    <span class="panel-title">{{nearObservationsQueryStatus}}</span>
+  <div class="alert alert-light" role="alert">
+    {{nearObservationsQueryStatus}}
   </div>
   <div class="panel-body">
       <div class="row">

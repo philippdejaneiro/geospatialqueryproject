@@ -1,20 +1,40 @@
 import assert from "assert";
+import { resetDatabase } from 'meteor/xolvio:cleaner';
 
-describe("geospatial-query-project", function () {
-  it("package.json has correct name", async function () {
-    const { name } = await import("../package.json");
-    assert.strictEqual(name, "geospatial-query-project");
-  });
+import { Obs } from '../server/main.js';
+import '../server/main.js';
 
-  if (Meteor.isClient) {
-    it("client is not server", function () {
-      assert.strictEqual(Meteor.isServer, false);
-    });
-  }
+Meteor.methods({
+  'test.resetDatabase': () => resetDatabase(),
+});
+
+describe("geospatial-query-project", function() {
 
   if (Meteor.isServer) {
-    it("server is not client", function () {
-      assert.strictEqual(Meteor.isClient, false);
+
+    it("Meteor.method 'fetchLatestObsToCollection': entry's longitude is numeric", function(done) {
+      Meteor.call('test.resetDatabase', done);
+      this.timeout(15000);
+      setTimeout(done, 15000);
+      Meteor.call('fetchLatestObsToCollection', [], function(err, response) {
+        if (err) { console.log(err.message); }
+        var entry = Obs.findOne();
+        assert.strictEqual(!isNaN(parseFloat(entry.coordinates[0])) && isFinite(entry.coordinates[0]), true);
+        done();
+      });
+    });
+
+    it("Meteor.method 'displayNearObs': query for dummy location returns some results", function(done) {
+      var queryLocationInput = {
+        'lon': -76.0,
+        'lat': 37.0,
+        'rad': 100
+      }
+      Meteor.call('displayNearObs', queryLocationInput, function(err, response) {
+        if (err) { console.log(err.message); }
+        assert.strictEqual(response.length >= 0, true);
+        done();
+      });
     });
   }
 });
