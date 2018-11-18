@@ -6,6 +6,7 @@ body {
 th.table {
     background-color: #4CAF50;
     color: white;
+    font-weight: bold;
 }
 
 tr:nth-child(even) {background-color: #f2f2f2;}

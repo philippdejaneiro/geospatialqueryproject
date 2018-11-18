@@ -5,6 +5,7 @@ Meteor.startup(() => {
     const Obs = new Mongo.Collection('obs');
     Obs.rawCollection().createIndex({'coordinates': '2dsphere'});
     Obs.rawCollection().createIndex({'stationId':1}, {unique: 1});
+    Obs.rawCollection().createIndex({'date':1});
     
     Meteor.methods({
         
@@ -43,7 +44,7 @@ Meteor.startup(() => {
                         'lat':  stationObs[k].LAT,
                         'lon':  stationObs[k].LON,
                         'coordinates': [parseFloat(stationObs[k].LON), parseFloat(stationObs[k].LAT)],
-                        'date': Date('<'+ stationObs[k].YYYY + '-' + stationObs[k].MM + '-' + stationObs[k].DD + 'T' + stationObs[k].hh + ':' + stationObs[k].mm + ':00Z>'),
+                        'date': new Date(stationObs[k].YYYY + '-' + stationObs[k].MM + '-' + stationObs[k].DD + 'T' + stationObs[k].hh + ':' + stationObs[k].mm + ':00'),
                         'WSPD': stationObs[k].WSPD,
                         'GST':  stationObs[k].GST,
                         'WVHT': stationObs[k].WVHT,
@@ -67,7 +68,8 @@ Meteor.startup(() => {
 	    }
 	    
         // fill return object
-        self.latestObsResponse.message = 'Data obtained from NDBC server: ' + response.headers.date;
+        var d = new Date(response.headers.date);
+        self.latestObsResponse.message = 'Data obtained from NDBC server: ' + formatDate(d) + ' (UTC)';
         console.log(self.latestObsResponse);
     	return self.latestObsResponse;
 	  },
@@ -75,9 +77,29 @@ Meteor.startup(() => {
       //find  observations within radius in collection for user display
       displayNearObs: function (queryLocationInput) {
 	    console.log('on server, displayNearObs called');
+	    if (queryLocationInput.lon & queryLocationInput.lat & queryLocationInput.rad) {
+	      var d = new Date();
+	      d.setHours(d.getHours() - 3);
           console.log(queryLocationInput);
-          var results = Obs.find({ "coordinates": { $near: { $geometry: { "type": "Point", "coordinates": [ queryLocationInput.lon, queryLocationInput.lat ] }, $maxDistance: queryLocationInput.rad*1609.344 } } }).fetch();
+          var results = Obs.find({
+              "coordinates": { $near: { $geometry: { "type": "Point", "coordinates": [ queryLocationInput.lon, queryLocationInput.lat ] }, $maxDistance: queryLocationInput.rad*1609.344 } },
+              "date": {$gte: d}
+          }).fetch();
+          results.forEach( function (currentValue, index, arr) {
+              arr[index].date = formatDate(arr[index].date);
+          });
           return results;
+	    }
+	    return [];
       },
    });
+   
+   var formatDate = function (d) {
+     return zeroPad(d.getUTCDate()) + '/' + zeroPad(d.getUTCMonth() + 1) + '/' + d.getUTCFullYear() + ', ' + zeroPad(d.getUTCHours()) + ':' + zeroPad(d.getUTCMinutes());
+   }
+   
+   // zero-pad a two digit integer
+   var zeroPad = function (n) {
+     return (n > 9 ? '' : '0') + n;
+   }
 });

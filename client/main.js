@@ -51,7 +51,6 @@ Template.queryLocation.events({
             myLocation.set(Geolocation.latLng());
             if (myLocation.get()) {
                 computation.stop();
-                //event.target.lon.value = myLocation.curValue.lng;
                 $('input[name="lon"]').val(Math.round(myLocation.curValue.lng*10)/10);
                 $('input[name="lat"]').val(Math.round(myLocation.curValue.lat*10)/10);
             }
