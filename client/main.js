@@ -1,21 +1,20 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Session } from 'meteor/session'
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
 import { Geolocation } from 'meteor/mdg:geolocation';
 
 import './main.html';
 
 Template.info.onCreated(function infoOnCreated() {
-  Session.set("latestObsResponseMessage", "obtaining data...");
+  Session.set('latestObsResponseMessage', 'obtaining data...');
   Meteor.call('fetchLatestObsToCollection', [], function(err, response) {
     if (err) {
       Session.set('latestObsResponseMessage', err.message);
-      console.log(err);
       return;
     }
-    console.log("got latestObsResponse", response);
-    Session.set("latestObsResponseMessage", response.message);
-    return;
+    Session.set('latestObsResponseMessage', response.message);
   });
 });
 
@@ -26,27 +25,27 @@ Template.info.helpers({
 });
 
 Template.queryLocation.events({
-  'submit form': function(event) {
+  'submit form'(event) {
     event.preventDefault();
-    var queryLocationInput = {
-      'lon': parseFloat(event.target.lon.value),
-      'lat': parseFloat(event.target.lat.value),
-      'rad': parseFloat(event.target.rad.value)
-    }
+
+    const queryLocationInput = {
+      lon: parseFloat(event.target.lon.value),
+      lat: parseFloat(event.target.lat.value),
+      rad: parseFloat(event.target.rad.value),
+    };
+
     Meteor.call('displayNearObs', queryLocationInput, function(err, response) {
       if (err) {
         Session.set('nearObservationsQueryStatus', err.message);
-        console.log(err);
         return;
       }
-      console.log("got displayNearObs", response);
-      Session.set("nearObservations", response);
-      Session.set('nearObservationsQueryStatus', 'Found ' + response.length + ' results.');
+      Session.set('nearObservations', response);
+      Session.set('nearObservationsQueryStatus', `Found ${response.length} results.`);
     });
   },
 
-  'click .geolocate' (event, instance) {
-    var myLocation = new ReactiveVar();
+  'click .geolocate' () {
+    const myLocation = new ReactiveVar();
     Tracker.autorun(function(computation) {
       myLocation.set(Geolocation.latLng());
       if (myLocation.get()) {
@@ -58,8 +57,7 @@ Template.queryLocation.events({
   },
 
 
-
-  'click .dummylocate' (event, instance) {
+  'click .dummylocate' () {
     $('input[name="lon"]').val(-76.0);
     $('input[name="lat"]').val(37.0);
     $('input[name="rad"]').val(100);
@@ -67,15 +65,14 @@ Template.queryLocation.events({
 });
 
 Template.observationList.onCreated(function queryLocationCreated() {
-
   // set reactive session variable to initial state
-  Session.set("nearObservations", null);
+  Session.set('nearObservations', null);
   Session.set('nearObservationsQueryStatus', 'Hit "Query Observations in Radius" button to obtain results.');
 });
 
 Template.observationList.helpers({
 
-  observationTitles: function() {
+  observationTitles() {
     return [
       'stationId',
       'longitude / deg',
@@ -97,11 +94,11 @@ Template.observationList.helpers({
     ];
   },
 
-  nearObservations: function() {
+  nearObservations() {
     return Session.get('nearObservations');
   },
 
-  nearObservationsQueryStatus: function() {
+  nearObservationsQueryStatus() {
     return Session.get('nearObservationsQueryStatus');
   },
 
