@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import assert from 'assert';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 
-import '../server/main.js';
+import { Obs } from '../server/main.js';
 
 Meteor.methods({
   'test.resetDatabase': () => resetDatabase(),
